@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Produits | Wezon Care</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+    <h1>Wezon Care</h1>
+    <p class="slogan">Pure & Naturel<br>Pour votre peau et vos cheveux</p>
+</header>
+
+<nav>
+    <a href="index.html">Accueil</a>
+    <a href="produits.html">Produits</a>
+    <a href="apropos.html">À propos</a>
+    <a href="contact.html">Commander</a>
+</nav>
+
+<section class="liste-produits">
+    <h2>Nos Produits</h2>
+    <div class="grid-produits">
+
+		 <div class="carte-produit">
+			<img src="images/neem_200ml.jpg">
+			<h3>Huile de Neem 200ml</h3>
+			<p>3450 FCFA</p>
+
+			<input type="number" min="1" value="1" id="qte-neem-200">
+
+			<button onclick="ajouterAuPanier('Huile de Neem 200ml', 'qte-neem-200')">
+				Ajouter au panier
+			</button>
+		</div>
+
+
+		<div class="carte-produit">
+			<img src="images/neem_300ml.jpg">
+			<h3>Huile de Neem 300ml</h3>
+			<p>5000 FCFA</p>
+
+			<input type="number" min="1" value="1" id="qte-neem-300">
+
+			<button onclick="ajouterAuPanier('Huile de Neem 300ml', 'qte-neem-300')">
+				Ajouter au panier
+			</button>
+		</div>
+
+
+		<div class="carte-produit">
+			<img src="images/karite_100ml.jpg">
+			<h3>Beurre de Karite 100ml</h3>
+			<p>1500 FCFA</p>
+
+			<input type="number" min="1" value="1" id="qte-karite-100">
+
+			<button onclick="ajouterAuPanier('Beurre de Karite 100ml', 'qte-karite-100')">
+				Ajouter au panier
+			</button>
+		</div>
+
+
+		<div class="carte-produit">
+			<img src="images/karite_250ml.jpg">
+			<h3>Beurre de Karite 250ml</h3>
+			<p>2500 FCFA</p>
+
+			<input type="number" min="1" value="1" id="qte-karite-250">
+
+			<button onclick="ajouterAuPanier('Beurre de Karite 250ml', 'qte-karite-250')">
+				Ajouter au panier
+			</button>
+		</div>
+
+
+		<div class="carte-produit">
+			<img src="images/chebe_100ml.jpg">
+			<h3>Huile de Chébé 100ml</h3>
+			<p>2000 FCFA</p>
+
+			<input type="number" min="1" value="1" id="qte-chebe-100">
+
+			<button onclick="ajouterAuPanier('Huile de Chébé 100ml', 'qte-chebe-100')">
+				Ajouter au panier
+			</button>
+		</div>
+
+
+		<div class="carte-produit">
+			<img src="images/chebe_250ml.jpg">
+			<h3>Huile de Chébé 250ml</h3>
+			<p>3500 FCFA</p>
+
+			<input type="number" min="1" value="1" id="qte-chebe-250">
+
+			<button onclick="ajouterAuPanier('Huile de Chébé 250ml', 'qte-chebe-250')">
+				Ajouter au panier
+			</button>
+		</div>
+
+    </div>
+</section>
+
+<section class="panier-section">
+    <h2>Votre Panier</h2>
+    <div id="panierProduits"></div>
+    <p>Total : <span id="totalPanier">0</span> FCFA</p>
+</section>
+
+<a href="contact.html" class="btn-flottant">
+    Finaliser la commande
+    <span id="badge-panier">0</span>
+</a>
+
+<script>
+const prixProduits = {
+    "Huile de Neem 200ml": 3450,
+    "Huile de Neem 300ml": 5000,
+    "Beurre de Karite 100ml": 1500,
+    "Beurre de Karite 250ml": 2500,
+    "Huile de Chébé 100ml": 2000,
+    "Huile de Chébé 250ml": 3500
+};
+
+function majBadge() {
+    let panier = JSON.parse(localStorage.getItem("panier")) || [];
+    let totalArticles = panier.reduce((acc, item) => acc + item.quantite, 0);
+    document.getElementById("badge-panier").innerText = totalArticles;
+    afficherPanier();
+}
+
+function ajouterAuPanier(produit, idQte) {
+    let quantite = parseInt(document.getElementById(idQte).value);
+    let panier = JSON.parse(localStorage.getItem("panier")) || [];
+    let existant = panier.find(p => p.produit === produit);
+
+    if (existant) {
+        existant.quantite += quantite;
+    } else {
+        panier.push({ produit: produit, quantite: quantite });
+    }
+
+    localStorage.setItem("panier", JSON.stringify(panier));
+    majBadge();
+    alert(produit + " ajouté au panier !");
+}
+
+function afficherPanier() {
+    let panier = JSON.parse(localStorage.getItem("panier")) || [];
+    let container = document.getElementById("panierProduits");
+    container.innerHTML = "";
+    let total = 0;
+
+    panier.forEach((item, index) => {
+        total += prixProduits[item.produit] * item.quantite;
+
+        let div = document.createElement("div");
+
+        let qteInput = document.createElement("input");
+        qteInput.type = "number";
+        qteInput.min = 1;
+        qteInput.value = item.quantite;
+        qteInput.onchange = () => {
+            item.quantite = parseInt(qteInput.value);
+            localStorage.setItem("panier", JSON.stringify(panier));
+            majBadge();
+        };
+
+        let label = document.createElement("span");
+        label.innerText = `${item.produit} - ${prixProduits[item.produit]} FCFA`;
+
+        let btnSupprimer = document.createElement("button");
+        btnSupprimer.innerText = "Supprimer";
+        btnSupprimer.onclick = () => {
+            panier.splice(index, 1);
+            localStorage.setItem("panier", JSON.stringify(panier));
+            majBadge();
+        };
+
+        div.appendChild(qteInput);
+        div.appendChild(label);
+        div.appendChild(btnSupprimer);
+
+        container.appendChild(div);
+    });
+
+    document.getElementById("totalPanier").innerText = total;
+}
+
+// Charger badge + panier au démarrage
+document.addEventListener("DOMContentLoaded", majBadge);
+</script>
+
+</body>
+</html>
